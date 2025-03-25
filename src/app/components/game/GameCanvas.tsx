@@ -39,13 +39,13 @@ interface GameCanvasProps {
 }
 
 // Game constants
-const PADDLE_WIDTH = 100;
-const PADDLE_HEIGHT = 20;
+const PADDLE_WIDTH = 80;
+const PADDLE_HEIGHT = 10;
 const PADDLE_SPEED = 8;
-const BALL_RADIUS = 10;
+const BALL_RADIUS = 8;
 const BALL_SPEED = 5;
-const BLOCK_WIDTH = 70;
-const BLOCK_HEIGHT = 30;
+const BLOCK_WIDTH = 35;
+const BLOCK_HEIGHT = 20;
 const BLOCK_PADDING = 10;
 const BLOCK_ROWS = 4;
 const BLOCK_COLS = 7;
@@ -134,21 +134,43 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Reset game when state changes to playing
   useEffect(() => {
-    if (gameState === "playing" && lives > 0) {
+    const handleResetPaddlePosition = () => {
       // Reset paddle position
       setPaddle((prev) => ({
         ...prev,
         x: width / 2 - PADDLE_WIDTH / 2,
       }));
+    };
 
+    if (gameState === "playing" && lives > 0) {
       // Reset ball position if it's not moving
       if (ball.dx === 0 && ball.dy === 0) {
+        handleResetPaddlePosition();
+
         setBall((prev) => ({
           ...prev,
           x: width / 2,
           y: height - PADDLE_HEIGHT - BALL_RADIUS - 10,
         }));
       }
+    }
+
+    if (gameState === "gameOver") {
+      setBlocks(
+        createBlockGrid(
+          BLOCK_ROWS,
+          BLOCK_COLS,
+          BLOCK_WIDTH,
+          BLOCK_HEIGHT,
+          (width - (BLOCK_WIDTH + BLOCK_PADDING) * BLOCK_COLS + BLOCK_PADDING) /
+            2,
+          50,
+          BLOCK_PADDING
+        )
+      );
+      setLevel(1);
+      setLives(3);
+      handleResetPaddlePosition();
     }
   }, [gameState, width, height, lives, ball.dx, ball.dy]);
 
