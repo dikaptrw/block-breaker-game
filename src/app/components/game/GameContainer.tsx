@@ -72,6 +72,17 @@ const GameContainer: React.FC = () => {
     setLives(newLives);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handlePauseGame();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handlePauseGame]);
+
   return (
     <div className="flex flex-col items-center justify-center bg-gray-900 p-4">
       <div className="mb-4 text-base flex items-center justify-between w-full max-w-[800px]">
