@@ -236,7 +236,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
     ctx.clearRect(0, 0, width, height);
 
     // Draw background
-    ctx.fillStyle = "#1a1a2e";
+    ctx.fillStyle = "#191919";
     ctx.fillRect(0, 0, width, height);
 
     // Apply screen shake effect
@@ -377,7 +377,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.textAlign = "left";
-    ctx.fillText(`Level: ${level}`, 20, 30);
+    ctx.fillText(`Level: ${level}`, 18, 25);
 
     // Reset screen shake
     if (shakeEffect) {
@@ -396,13 +396,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
       ref={canvasRef}
       width={width}
       height={height}
-      className={`border border-gray-700 rounded-md shadow-lg ${
-        shakeEffect ? "animate-shake" : ""
-      }`}
+      className={`rounded-lg shadow-lg ${shakeEffect ? "animate-shake" : ""}`}
       style={{
         width: `${width}px`,
         height: `${height}px`,
-        backgroundColor: "#1a1a2e",
       }}
     />
   );

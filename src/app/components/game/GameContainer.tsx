@@ -84,17 +84,17 @@ const GameContainer: React.FC = () => {
   }, [handlePauseGame]);
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-900 p-4">
+    <div className="flex flex-col items-center justify-center p-4">
       <div className="mb-4 text-base flex items-center justify-between w-full max-w-[800px]">
         <div className="text-white font-bold">
           Score:{" "}
-          <span className="text-yellow-400">
+          <span className="text-yellow-500">
             {score.toString().padStart(5, "0")}
           </span>
         </div>
         <div className="text-white font-bold">
           High Score:{" "}
-          <span className="text-yellow-400">
+          <span className="text-yellow-500">
             {highScore.toString().padStart(5, "0")}
           </span>
         </div>
@@ -102,15 +102,17 @@ const GameContainer: React.FC = () => {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className={`w-4 h-4 rounded-full ${
-                i < lives ? "bg-white" : "bg-gray-600"
+              className={`w-4 h-4 rounded-full border ${
+                i < lives
+                  ? "bg-white border-white"
+                  : "bg-[#191919] border-[#697565]/40"
               }`}
             />
           ))}
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative rounded-lg overflow-hidden border border-[#697565]/20">
         <GameCanvas
           width={GAME_WIDTH}
           height={GAME_HEIGHT}
@@ -122,16 +124,16 @@ const GameContainer: React.FC = () => {
         />
 
         {gameState === "idle" && (
-          <div className="absolute inset-0 p-14 flex flex-col items-center justify-center bg-black bg-opacity-70">
-            <h1 className="text-4xl text-white font-bold mb-6">
-              Block Breaker
+          <div className="absolute inset-0 p-14 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
+            <h1 className="text-2xl text-white font-bold mb-6">
+              Are you ready?
             </h1>
-            <p className="text-xl text-white mb-8 text-center">
+            <p className="text-lg text-white mb-8 text-center">
               Break all the blocks to advance to the next level!
             </p>
             <button
               onClick={handleStartGame}
-              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition cursor-pointer"
+              className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition cursor-pointer"
             >
               Start Game
             </button>
@@ -139,11 +141,11 @@ const GameContainer: React.FC = () => {
         )}
 
         {gameState === "paused" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
             <h2 className="text-3xl text-white font-bold mb-6">Game Paused</h2>
             <button
               onClick={handlePauseGame}
-              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition"
+              className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition"
             >
               Resume Game
             </button>
@@ -151,13 +153,19 @@ const GameContainer: React.FC = () => {
         )}
 
         {gameState === "gameOver" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
             <h2 className="text-3xl text-white font-bold mb-4">Game Over</h2>
-            <p className="text-xl text-white mb-2">Final Score: {score}</p>
-            <p className="text-xl text-white mb-6">High Score: {highScore}</p>
+            <p className="text-lg text-white mb-2">
+              Final Score:
+              <span className="text-yellow-500">{score}</span>
+            </p>
+            <p className="text-lg text-white mb-6">
+              High Score:
+              <span className="text-yellow-500">{highScore}</span>
+            </p>
             <button
               onClick={handleRestartGame}
-              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition"
+              className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition"
             >
               Play Again
             </button>

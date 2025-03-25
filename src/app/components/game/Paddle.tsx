@@ -14,7 +14,7 @@ export const createPaddle = (
   width: number = 100,
   height: number = 20,
   speed: number = 8,
-  color: string = '#e0e0e0'
+  color: string = "#697565"
 ): PaddleType => {
   return {
     x,
@@ -22,25 +22,28 @@ export const createPaddle = (
     width,
     height,
     speed,
-    color
+    color,
   };
 };
 
 // Function to move paddle left
-export const movePaddleLeft = (paddle: PaddleType, canvasWidth: number): PaddleType => {
+export const movePaddleLeft = (paddle: PaddleType): PaddleType => {
   const newX = Math.max(0, paddle.x - paddle.speed);
   return {
     ...paddle,
-    x: newX
+    x: newX,
   };
 };
 
 // Function to move paddle right
-export const movePaddleRight = (paddle: PaddleType, canvasWidth: number): PaddleType => {
+export const movePaddleRight = (
+  paddle: PaddleType,
+  canvasWidth: number
+): PaddleType => {
   const newX = Math.min(canvasWidth - paddle.width, paddle.x + paddle.speed);
   return {
     ...paddle,
-    x: newX
+    x: newX,
   };
 };
 
@@ -51,14 +54,14 @@ export const updatePaddle = (
   canvasWidth: number
 ): PaddleType => {
   let newPaddle = { ...paddle };
-  
-  if (keysPressed['ArrowLeft']) {
-    newPaddle = movePaddleLeft(newPaddle, canvasWidth);
+
+  if (keysPressed["ArrowLeft"]) {
+    newPaddle = movePaddleLeft(newPaddle);
   }
-  
-  if (keysPressed['ArrowRight']) {
+
+  if (keysPressed["ArrowRight"]) {
     newPaddle = movePaddleRight(newPaddle, canvasWidth);
   }
-  
+
   return newPaddle;
 };

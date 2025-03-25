@@ -6,7 +6,7 @@ export interface BlockType {
   height: number;
   color: string;
   health: number;
-  special?: 'tnt' | 'circle' | 'plus';
+  special?: "tnt" | "circle" | "plus";
   broken: boolean;
 }
 
@@ -19,7 +19,7 @@ export const createBlock = (
   height: number,
   color: string,
   health: number = 1,
-  special?: 'tnt' | 'circle' | 'plus'
+  special?: "tnt" | "circle" | "plus"
 ): BlockType => {
   return {
     id,
@@ -45,24 +45,28 @@ export const createBlockGrid = (
   padding: number
 ): BlockType[] => {
   const blocks: BlockType[] = [];
-  const colors = ['#4361ee', '#ef233c', '#ffb703', '#2a9d8f']; // Blue, Red, Yellow, Green
+  const colors = ["#187498", "#EB5353", "#F9D923", "#36AE7C"]; // Blue, Red, Yellow, Green
 
   for (let row = 0; row < rows; row++) {
     const color = colors[row % colors.length];
-    
+
     for (let col = 0; col < cols; col++) {
       const x = startX + col * (blockWidth + padding);
       const y = startY + row * (blockHeight + padding);
-      
+
       // Determine if this block should be special
-      let special: 'tnt' | 'circle' | 'plus' | undefined = undefined;
-      
+      let special: "tnt" | "circle" | "plus" | undefined = undefined;
+
       // Add some special blocks randomly
       if (Math.random() < 0.1) {
-        const specialTypes: ('tnt' | 'circle' | 'plus')[] = ['tnt', 'circle', 'plus'];
+        const specialTypes: ("tnt" | "circle" | "plus")[] = [
+          "tnt",
+          "circle",
+          "plus",
+        ];
         special = specialTypes[Math.floor(Math.random() * specialTypes.length)];
       }
-      
+
       blocks.push(
         createBlock(
           `block-${row}-${col}`,
@@ -77,6 +81,6 @@ export const createBlockGrid = (
       );
     }
   }
-  
+
   return blocks;
 };

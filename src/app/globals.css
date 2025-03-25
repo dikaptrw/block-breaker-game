@@ -6,16 +6,6 @@
   --background-end-rgb: 13, 13, 23;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .animate-shake {
     animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
