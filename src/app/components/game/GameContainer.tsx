@@ -15,6 +15,7 @@ const GameContainer: React.FC = () => {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [highScore, setHighScore] = useState(0);
+  const [showGameInfo, setShowGameInfo] = useState(false);
 
   // Load high score from localStorage on mount
   useEffect(() => {
@@ -123,7 +124,34 @@ const GameContainer: React.FC = () => {
           gameState={gameState}
         />
 
-        {gameState === "idle" && (
+        {showGameInfo && (
+          <div className="absolute inset-0 p-8 bg-[#191919] bg-opacity-70 flex flex-col items-start justify-center text-2sm text-white">
+            <h1 className="text-2xl font-bold mb-4 text-center w-full -mt-1">
+              Game Info
+            </h1>
+            <p className="mb-4">
+              Press the left and right arrow keys to move the paddle.
+            </p>
+            <p className="mb-4">
+              Press the space bar or touch the screen to launch the ball.
+            </p>
+            <p>Special blocks:</p>
+            <p>TNT - Destroys adjacent blocks</p>
+            <p>Circle - Extra points</p>
+            <p>Plus - Destroys blocks in same row and column</p>
+
+            <div className="mt-6 flex justify-center w-full">
+              <button
+                onClick={() => setShowGameInfo(false)}
+                className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!showGameInfo && gameState === "idle" && (
           <div className="absolute inset-0 p-14 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
             <h1 className="text-2xl text-white font-bold mb-6">
               Are you ready?
@@ -140,19 +168,25 @@ const GameContainer: React.FC = () => {
           </div>
         )}
 
-        {gameState === "paused" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
+        {!showGameInfo && gameState === "paused" && (
+          <div className="absolute inset-0 p-8 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
             <h2 className="text-3xl text-white font-bold mb-6">Game Paused</h2>
+
+            <div className="mb-8 text-white text-center">
+              Tap &apos;Resume&apos; to continue! Take a break and come back
+              stronger!
+            </div>
+
             <button
               onClick={handlePauseGame}
-              className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition"
+              className="px-6 py-3 bg-[#697565] text-white font-bold rounded-md transition cursor-pointer"
             >
               Resume Game
             </button>
           </div>
         )}
 
-        {gameState === "gameOver" && (
+        {!showGameInfo && gameState === "gameOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#191919] bg-opacity-70">
             <h2 className="text-3xl text-white font-bold mb-4">Game Over</h2>
             <p className="text-lg text-white mb-2">
@@ -171,6 +205,22 @@ const GameContainer: React.FC = () => {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="mt-4 text-white">
+        For detailed game instructions and tips,{" "}
+        <button
+          onClick={() => {
+            setShowGameInfo(true);
+            if (gameState === "playing") {
+              handlePauseGame();
+            }
+          }}
+          className="text-yellow-500 cursor-pointer"
+        >
+          click here
+        </button>
+        .
       </div>
     </div>
   );
