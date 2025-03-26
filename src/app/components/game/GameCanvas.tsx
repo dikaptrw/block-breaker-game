@@ -41,7 +41,7 @@ interface GameCanvasProps {
 // Game constants
 const PADDLE_WIDTH = 80;
 const PADDLE_HEIGHT = 10;
-const PADDLE_SPEED = 8;
+const PADDLE_SPEED = 12;
 const BALL_RADIUS = 8;
 const BALL_SPEED = 5;
 const BLOCK_WIDTH = 35;
@@ -226,26 +226,38 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
   // Create new level
   const createNewLevel = useCallback(() => {
     setLevel((prev) => prev + 1);
+
+    const rows = level < 3 ? BLOCK_ROWS + level : 6;
+    const cols = level < 3 ? BLOCK_COLS + level : 9;
+    const ballSpeed =
+      level > 2 && level < 5 ? BALL_SPEED + level - 2 : BALL_SPEED;
+
     setBlocks(
       createBlockGrid(
-        BLOCK_ROWS,
-        BLOCK_COLS,
+        rows,
+        cols,
         BLOCK_WIDTH,
         BLOCK_HEIGHT,
-        (width - (BLOCK_WIDTH + BLOCK_PADDING) * BLOCK_COLS + BLOCK_PADDING) /
-          2,
+        (width - (BLOCK_WIDTH + BLOCK_PADDING) * cols + BLOCK_PADDING) / 2,
         50,
         BLOCK_PADDING
       )
     );
     setBall((prev) =>
-      resetBall(prev, width / 2, height - PADDLE_HEIGHT - BALL_RADIUS - 10)
+      resetBall(
+        {
+          ...prev,
+          speed: ballSpeed,
+        },
+        width / 2,
+        height - PADDLE_HEIGHT - BALL_RADIUS - 10
+      )
     );
 
     // Add level transition effect
     setFlashEffect(true);
     setTimeout(() => setFlashEffect(false), 300);
-  }, [width, height]);
+  }, [width, height, level]);
 
   // Check if level is complete
   useEffect(() => {
