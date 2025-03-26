@@ -103,7 +103,10 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
   const [flashEffect, setFlashEffect] = useState(false);
   const [shakeEffect, setShakeEffect] = useState(false);
 
-  // Handle key events
+  // Touch event state
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  // Handle key and touch events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       setKeysPressed((prev) => ({ ...prev, [e.key]: true }));
@@ -123,14 +126,60 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
       setKeysPressed((prev) => ({ ...prev, [e.key]: false }));
     };
 
+    // Touch event handlers
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      setTouchStartX(touch.clientX);
+
+      // Launch ball with tap if it's not moving
+      if (gameState === "playing" && ball.dx === 0 && ball.dy === 0) {
+        setBall((prev) => launchBall(prev));
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartX === null) return;
+
+      const touch = e.touches[0];
+      const moveDiff = touch.clientX - touchStartX; // Calculate movement delta
+
+      setPaddle((prev) => ({
+        ...prev,
+        x: Math.max(0, Math.min(width - prev.width, prev.x + moveDiff)), // Keep within bounds
+      }));
+
+      setTouchStartX(touch.clientX); // Update touch start for next move
+
+      e.preventDefault(); // Prevent page scrolling
+    };
+
+    // Add event listeners
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+
+    // Add touch event listeners to the canvas
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener("touchmove", handleTouchMove as EventListener);
+      canvas.addEventListener("touchstart", handleTouchStart as EventListener);
+    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+
+      if (canvas) {
+        canvas.removeEventListener(
+          "touchmove",
+          handleTouchMove as EventListener
+        );
+        canvas.removeEventListener(
+          "touchstart",
+          handleTouchStart as EventListener
+        );
+      }
     };
-  }, [gameState, ball.dx, ball.dy]);
+  }, [gameState, ball.dx, ball.dy, touchStartX, width]);
 
   // Reset game when state changes to playing
   useEffect(() => {
@@ -392,16 +441,18 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
   });
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className={`rounded-lg shadow-lg ${shakeEffect ? "animate-shake" : ""}`}
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-      }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className={`rounded-lg shadow-lg ${shakeEffect ? "animate-shake" : ""}`}
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+        }}
+      />
+    </>
   );
 };
 
