@@ -14,7 +14,7 @@ export const createBall = (
   y: number,
   radius: number = 10,
   speed: number = 5,
-  color: string = '#ffffff'
+  color: string = "#ffffff"
 ): BallType => {
   return {
     x,
@@ -23,7 +23,7 @@ export const createBall = (
     dx: 0,
     dy: 0,
     speed,
-    color
+    color,
   };
 };
 
@@ -31,11 +31,11 @@ export const createBall = (
 export const launchBall = (ball: BallType, angle?: number): BallType => {
   // If angle is not provided, use a random angle between -45 and 45 degrees
   const launchAngle = angle ?? (Math.random() * 90 - 45) * (Math.PI / 180);
-  
+
   return {
     ...ball,
     dx: ball.speed * Math.sin(launchAngle),
-    dy: -ball.speed * Math.cos(launchAngle)
+    dy: -ball.speed * Math.cos(launchAngle),
   };
 };
 
@@ -44,29 +44,32 @@ export const updateBall = (ball: BallType): BallType => {
   return {
     ...ball,
     x: ball.x + ball.dx,
-    y: ball.y + ball.dy
+    y: ball.y + ball.dy,
   };
 };
 
 // Function to handle ball collision with walls
-export const handleWallCollision = (ball: BallType, width: number, height: number): BallType => {
+export const handleWallCollision = (
+  ball: BallType,
+  width: number
+): BallType => {
   let newDx = ball.dx;
   let newDy = ball.dy;
-  
+
   // Collision with left or right wall
   if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= width) {
     newDx = -ball.dx;
   }
-  
+
   // Collision with top wall
   if (ball.y - ball.radius <= 0) {
     newDy = -ball.dy;
   }
-  
+
   return {
     ...ball,
     dx: newDx,
-    dy: newDy
+    dy: newDy,
   };
 };
 
@@ -82,7 +85,7 @@ export const resetBall = (ball: BallType, x: number, y: number): BallType => {
     x,
     y,
     dx: 0,
-    dy: 0
+    dy: 0,
   };
 };
 
@@ -103,17 +106,17 @@ export const handlePaddleCollision = (
   ) {
     // Calculate where the ball hit the paddle (0 to 1)
     const hitPosition = (ball.x - paddleX) / paddleWidth;
-    
+
     // Calculate new angle based on hit position
     // Middle of paddle sends ball straight up, edges send at angle
     const angle = (hitPosition - 0.5) * Math.PI * 0.7; // Max angle of about 60 degrees
-    
+
     return {
       ...ball,
       dy: -Math.abs(ball.dy), // Always bounce up
-      dx: ball.speed * Math.sin(angle)
+      dx: ball.speed * Math.sin(angle),
     };
   }
-  
+
   return ball;
 };

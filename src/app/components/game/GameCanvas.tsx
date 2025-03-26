@@ -327,7 +327,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
       currentBall = updateBall(currentBall);
 
       // Handle wall collisions
-      currentBall = handleWallCollision(currentBall, width, height);
+      currentBall = handleWallCollision(currentBall, width);
 
       // Handle paddle collision
       currentBall = handlePaddleCollision(
