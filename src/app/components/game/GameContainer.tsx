@@ -130,15 +130,24 @@ const GameContainer: React.FC = () => {
               Game Info
             </h1>
             <p className="mb-4">
-              Press the left and right arrow keys to move the paddle.
+              Press the left or right arrow keys, or swipe left or right, to
+              move the paddle
             </p>
             <p className="mb-4">
-              Press the space bar or touch the screen to launch the ball.
+              Press the space bar or tap the screen to launch the ball.
             </p>
             <p>Special blocks:</p>
-            <p>TNT - Destroys adjacent blocks</p>
-            <p>Circle - Extra points</p>
-            <p>Plus - Destroys blocks in same row and column</p>
+            <p>
+              <span className="text-yellow-500">TNT</span> - Destroys adjacent
+              blocks
+            </p>
+            <p>
+              <span className="text-yellow-500">Circle</span> - Extra points
+            </p>
+            <p>
+              <span className="text-yellow-500">Plus</span> - Destroys blocks in
+              same row and column
+            </p>
 
             <div className="mt-6 flex justify-center w-full">
               <button
