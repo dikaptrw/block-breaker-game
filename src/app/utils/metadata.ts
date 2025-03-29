@@ -4,7 +4,7 @@ import { Twitter } from "next/dist/lib/metadata/types/twitter-types";
 
 export const type = "website";
 export const title = "Block Breaker - Play block breaker game online for free";
-export const url = "https://snake.dikaptrw.com/";
+export const url = "https://block-breaker.dikaptrw.com/";
 export const description =
   "Play block breaker game online for free. No sign up required.";
 export const imageUrl = `/seo.webp`;
