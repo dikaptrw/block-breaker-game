@@ -1,11 +1,23 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import GameCanvas from "./GameCanvas";
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "@firebase/firestore";
+import { ENV } from "@/app/constants";
+import db from "@/app/utils/firestore";
+import Player from "./Player";
 
 // Game constants
 const GAME_WIDTH = 500;
 const GAME_HEIGHT = 400;
+const HIGH_SCORE_STORAGE = "blockBreakerHighScore";
+const HIGH_SCORE_PLAYER_STORAGE = "blockBreakerHighScorePlayer";
 
 // Game states
 type GameState = "idle" | "playing" | "paused" | "gameOver";
@@ -15,23 +27,87 @@ const GameContainer: React.FC = () => {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [highScore, setHighScore] = useState(0);
+  const [highScorePlayer, setHighScorePlayer] = useState("");
   const [showGameInfo, setShowGameInfo] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const collectionRef = useMemo(() => {
+    return collection(db, "dikaptrw-profile", ENV, "games");
+  }, []);
+  const docRef = useMemo(() => {
+    return doc(
+      collectionRef,
+      process.env.NEXT_PUBLIC_BLOCK_BREAKER_GAME_DOC_ID
+    );
+  }, [collectionRef]);
 
   // Load high score from localStorage on mount
   useEffect(() => {
-    const savedHighScore = localStorage.getItem("blockBreakerHighScore");
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore, 10));
+    if (process.env.NEXT_PUBLIC_HIGH_SCORE_MODE === "firestore") {
+      getDoc(docRef).then((res) => {
+        const data = res.data();
+
+        if (data) {
+          setHighScore(data.highScore);
+          setHighScorePlayer(data.playerName);
+        }
+      });
+    } else {
+      const storedHighScore = localStorage.getItem(HIGH_SCORE_STORAGE);
+      const storedHighScorePlayer = localStorage.getItem(
+        HIGH_SCORE_PLAYER_STORAGE
+      );
+
+      setHighScore(storedHighScore ? parseInt(storedHighScore, 10) : highScore);
+      setHighScorePlayer(storedHighScorePlayer || highScorePlayer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update high score when score changes
   useEffect(() => {
+    // Update high score if current score is higher
     if (score > highScore) {
+      if (process.env.NEXT_PUBLIC_HIGH_SCORE_MODE === "firestore") {
+        updateHighScoreFirestore({
+          highScore: score,
+          highScorePlayer: playerName,
+        });
+      } else {
+        // Save high score to local storage
+        localStorage.setItem(HIGH_SCORE_STORAGE, score.toString());
+        localStorage.setItem(HIGH_SCORE_PLAYER_STORAGE, playerName.toString());
+      }
       setHighScore(score);
-      localStorage.setItem("blockBreakerHighScore", score.toString());
+      setHighScorePlayer(playerName);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [score, highScore]);
+
+  // Handle high score update on firestore
+  const updateHighScoreFirestore = useCallback(
+    ({
+      highScore,
+      highScorePlayer,
+    }: {
+      highScore: number;
+      highScorePlayer: string;
+    }) => {
+      getDoc(docRef).then((res) => {
+        if (res.exists()) {
+          updateDoc(docRef, {
+            highScore: Math.floor(highScore),
+            playerName: highScorePlayer,
+          });
+        } else {
+          setDoc(docRef, {
+            highScore: Math.floor(highScore),
+            playerName: highScorePlayer,
+          });
+        }
+      });
+    },
+    [docRef]
+  );
 
   // Handle game start
   const handleStartGame = useCallback(() => {
@@ -98,18 +174,9 @@ const GameContainer: React.FC = () => {
           <span className="text-yellow-500">
             {highScore.toString().padStart(5, "0")}
           </span>
-        </div>
-        <div className="flex space-x-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className={`w-4 h-4 rounded-full border ${
-                i < lives
-                  ? "bg-white border-white"
-                  : "bg-[#191919] border-[#697565]/40"
-              }`}
-            />
-          ))}
+          {highScorePlayer && (
+            <span className="text-xs pl-1">({highScorePlayer})</span>
+          )}
         </div>
       </div>
 
@@ -214,6 +281,28 @@ const GameContainer: React.FC = () => {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="mt-4 text-white w-full flex items-center gap-4">
+        <Player
+          isPlaying={gameState === "playing"}
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          handleStartGame={handleStartGame}
+        />
+
+        <div className="flex space-x-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-4 h-4 rounded-full border ${
+                i < lives
+                  ? "bg-white border-white"
+                  : "bg-[#191919] border-[#697565]/40"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mt-4 text-white">
